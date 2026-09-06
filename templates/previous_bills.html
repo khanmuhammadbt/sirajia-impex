@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Previous Bills{% endblock title %}
+{% block link %}<link rel="stylesheet" href="{{ url_for('static', filename='css/previous_bills.css') }}">{% endblock link %}
+{% block main %}
+<div class="dashboard-container">
+    <h1 class="page-title">Bill Management</h1>
+
+    <div class="action-grid">
+        <div class="action-card">
+            <h3>Download PDF</h3>
+            <p>Save a copy of a previous bill to your device.</p>
+            <form action="{{url_for('main.generate_previous_bill_pdf')}}" method="post" class="nav-form">
+                <div class="input-group">
+                    <label for="bill_no_pdf">Bill Number</label>
+                    <input type="text" id="bill_no_pdf" name="bill_no" placeholder="Enter Bill #" required>
+                </div>
+                <button type="submit" class="btn-primary">Generate PDF</button>
+            </form>
+        </div>
+
+        <div class="action-card">
+            <h3>Print Bill</h3>
+            <p>Send a previous bill directly to the printer.</p>
+            <form action="{{url_for('main.print_previous_bill')}}" method="post" class="nav-form">
+                <div class="input-group">
+                    <label for="bill_no_print">Bill Number</label>
+                    <input type="text" id="bill_no_print" name="bill_no" placeholder="Enter Bill #" required>
+                </div>
+                <button type="submit" class="btn-secondary">Print Bill</button>
+            </form>
+        </div>
+
+        <div class="action-card delete-card">
+            <h3>Delete Bill</h3>
+            <p>Remove a bill record permanently from the system.</p>
+            <form action="{{url_for('main.delete_previous_bill')}}" method="post" class="nav-form" onsubmit="return confirm('Are you sure? This cannot be undone.');">
+                <div class="input-group">
+                    <label for="bill_no_del">Bill Number</label>
+                    <input type="text" id="bill_no_del" name="bill_no" placeholder="Enter Bill #" required>
+                </div>
+                <button type="submit" class="btn-danger">Delete Bill</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock main %}

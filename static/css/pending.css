@@ -1,0 +1,81 @@
+/* Container Layout */
+.pending-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.pending-card {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+}
+
+h1 {
+    margin: 0 0 10px 0;
+    color: #2d3436;
+    font-size: 24px;
+}
+
+.subtitle {
+    color: #636e72;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+/* Form Styling */
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #2d3436;
+    font-size: 14px;
+}
+
+select, input {
+    padding: 12px;
+    border: 1px solid #dfe6e9;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+select:focus, input:focus {
+    outline: none;
+    border-color: #0984e3;
+    box-shadow: 0 0 0 3px rgba(9, 132, 227, 0.1);
+}
+
+/* Button Styling */
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    background-color: #0984e3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+    background-color: #074b83;
+}
+
+/* Empty State */
+.no-data {
+    text-align: center;
+    color: #636e72;
+    padding: 50px;
+}

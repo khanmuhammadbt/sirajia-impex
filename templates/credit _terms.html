@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Credit Terms{% endblock title %}
+{% block link %}<link rel="stylesheet" href="{{ url_for('static', filename='css/credit_terms.css') }}">{% endblock link %}
+{% block main %}
+<div class="form-container">
+    <section class="form-section">
+        <h2>Record Credit Payment</h2>
+        <form action="{{url_for('main.add_credit_terms')}}" method="post" class="styled-form">
+            
+            <div class="form-group">
+                <label for="company_filter">Select Company</label>
+                <select id="company_filter" name="company_name" required>
+                    <option value="" disabled selected>Choose a company...</option>
+                    {% for company in company_names %}
+                        <option value="{{ company.company_name }}">{{ company.company_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-row">
+    <div class="form-group">
+        <label>Given Date</label>
+        <span id="given_date_error" class="error-text"></span>
+
+        <!-- Visible calendar -->
+        <input type="date" id="given_date_ui" required>
+
+        <!-- Hidden date value submitted in ISO format -->
+        <input type="hidden" id="given_date" name="given_date">
+    </div>
+
+    <div class="form-group">
+        <label>Clear Date</label>
+        <span id="clear_date_error" class="error-text"></span>
+
+        <!-- Visible calendar -->
+        <input type="date" id="clear_date_ui" required>
+
+        <!-- Hidden date value submitted in ISO format -->
+        <input type="hidden" id="clear_date" name="clear_date">
+    </div>
+</div>
+
+
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="check_no">Check Number</label>
+                    <input type="text" id="check_no" name="check_no" placeholder="e.g. CHK-1002" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="payment">Payment Amount</label>
+                    <input type="floatformat" id="payment" name="payment" step="0.01" placeholder="0.00" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Submit Payment</button>
+        </form>
+    </section>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('.styled-form');
+    
+    form.addEventListener('keydown', (e) => {
+        // Only trigger for Up and Down arrows
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            
+            // Get all focusable elements in order
+            const focusableElements = Array.from(
+                form.querySelectorAll('input, select, button')
+            );
+            
+            const currentIndex = focusableElements.indexOf(document.activeElement);
+            
+            if (e.key === 'ArrowDown') {
+                if (currentIndex < focusableElements.length - 1) {
+                    e.preventDefault(); // Stop page scroll
+                    focusableElements[currentIndex + 1].focus();
+                }
+            } else if (e.key === 'ArrowUp') {
+                if (currentIndex > 0) {
+                    e.preventDefault(); // Stop page scroll
+                    focusableElements[currentIndex - 1].focus();
+                }
+            }
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const form = document.querySelector('.styled-form');
+
+    const givenUI = document.getElementById('given_date_ui');
+    const clearUI = document.getElementById('clear_date_ui');
+
+    const givenHidden = document.getElementById('given_date');
+    const clearHidden = document.getElementById('clear_date');
+
+    const givenError = document.getElementById('given_date_error');
+    const clearError = document.getElementById('clear_date_error');
+
+    function clearErrors() {
+        givenError.textContent = '';
+        clearError.textContent = '';
+    }
+
+    function validateDates() {
+        clearErrors();
+
+        if (!givenUI.value || !clearUI.value) return false;
+
+        const given = new Date(givenUI.value);
+        const clear = new Date(clearUI.value);
+
+        // ❗ Only block when Given > Clear
+        if (given > clear) {
+            givenError.textContent = 'Given Date cannot be greater than Clear Date';
+            return false;
+        }
+        return true;
+    }
+
+    givenUI.addEventListener('change', () => {
+        if (givenUI.value) {
+            givenHidden.value = givenUI.value;
+        }
+        validateDates();
+    });
+
+    clearUI.addEventListener('change', () => {
+        if (clearUI.value) {
+            clearHidden.value = clearUI.value;
+        }
+        validateDates();
+    });
+
+    form.addEventListener('submit', (e) => {
+        if (!validateDates()) {
+            e.preventDefault(); // 🚫 stop submit
+        }
+    });
+});
+
+</script>
+{% endblock main %}

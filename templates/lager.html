@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Lager{% endblock title %}
+
+{% block main %}
+<style>
+    .ledger-table { border: 2px solid #000 !important; width: 100%; border-collapse: collapse; }
+    .ledger-table th, .ledger-table td { border: 1px solid #444 !important; padding: 8px; }
+    .payment-row { background-color: #f2f2f2 !important; font-weight: bold; }
+    .filter-section { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd; }
+</style>
+
+<div class="ledger-page">
+    <h3 class="mb-4 text-center">Financial Ledger</h3>
+
+    <div class="filter-section mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <label for="companyFilter" class="form-label"><strong>Filter by Company:</strong></label>
+                <select id="companyFilter" class="form-select" onchange="filterLedger()">
+                    <option value="all">All Companies</option>
+                    {% for company in companies %}
+                        <option value="{{ company.company_name }}">{{ company.company_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="button" class="btn btn-primary" onclick="exportLedgerPdf()">Export PDF</button>
+            </div>
+        </div>
+    </div>
+    
+    {% set ns = namespace(balance=0) %}
+
+    <table class="table table-bordered ledger-table" id="ledgerTable">
+        <thead class="table-dark">
+            <tr>
+                <th>Bill No</th>
+                <th>Company</th>
+                <th>Date</th>
+                <th>Particular</th>
+                <th>Invoices (Dr)</th>
+                <th>Payment (Cr)</th>
+                <th>Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in ledger_entries %}
+                {% if entry.kind == 'bill' %}
+                    {% set item = entry.item %}
+                    {% set final_total = item.final_total | float %}
+                    {% set tax = item.tax | float %}
+                    {% set ns.balance = ns.balance + final_total %}
+                    <tr class="data-row" data-company="{{ item.company_name }}">
+                        <td>{{ item.bill_no }}</td>
+                        <td>{{ item.company_name }}</td>
+                        <td>{{ item.date }}</td>
+                        <td>Excl Sales Tax</td>
+                        <td>{{ "{:,.2f}".format(final_total) }}</td>
+                        <td></td>
+                        <td><strong>{{ "{:,.2f}".format(ns.balance) }}</strong></td>
+                    </tr>
+
+                    {% set ns.balance = ns.balance + tax %}
+                    <tr class="data-row" data-company="{{ item.company_name }}">
+                        <td>{{ item.bill_no }}</td>
+                        <td>{{ item.company_name }}</td>
+                        <td>{{ item.date }}</td>
+                        <td>Sales Tax</td>
+                        <td>{{ "{:,.2f}".format(tax) }}</td>
+                        <td></td>
+                        <td><strong>{{ "{:,.2f}".format(ns.balance) }}</strong></td>
+                    </tr>
+                {% else %}
+                    {% set payment_item = entry.item %}
+                    {% set ns.balance = ns.balance - (payment_item.payment | float) %}
+                    <tr class="payment-row data-row" data-company="{{ payment_item.company.name }}">
+                        <td class="text-center">CHECK</td>
+                        <td>{{ payment_item.company.name }}</td>
+                        <td>{{ entry.date }}</td>
+                        <td>Check No: {{ payment_item.check_no }}</td>
+                        <td></td>
+                        <td class="text-success">{{ "{:,.2f}".format(payment_item.payment | float) }}</td>
+                        <td class="text-primary"><strong>{{ "{:,.2f}".format(ns.balance) }}</strong></td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function filterLedger() {
+    var input = document.getElementById("companyFilter");
+    var filter = input.value;
+    var table = document.getElementById("ledgerTable");
+    var rows = table.getElementsByClassName("data-row");
+
+    for (var i = 0; i < rows.length; i++) {
+        var companyAttr = rows[i].getAttribute("data-company");
+        if (filter === "all" || companyAttr === filter) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
+    }
+}
+
+function exportLedgerPdf() {
+    const company = encodeURIComponent(document.getElementById("companyFilter").value);
+    window.location.href = "{{ url_for('main.generate_lager_pdf') }}?company=" + company;
+}
+</script>
+{% endblock main %}

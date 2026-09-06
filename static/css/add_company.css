@@ -1,0 +1,104 @@
+/* Container Layout */
+.form-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+/* Form Grouping */
+.form-group {
+    margin-bottom: 1.2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+/* Input Styling */
+input[type="text"],
+input[type="number"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+/* Buttons */
+button {
+    cursor: pointer;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: opacity 0.2s;
+}
+
+.btn-submit {
+    background-color: #28a745;
+    color: white;
+    width: 100%;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* Delete Section Specifics */
+.delete-section {
+    margin-top: 2rem;
+    padding-top: 1rem;
+}
+
+.warning-text {
+    color: #856404;
+    background-color: #fff3cd;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.separator {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 2rem 0;
+}
+
+/* High-visibility focus state for keyboard navigation */
+input:focus, button:focus {
+    outline: 3px solid #4a90e2;
+    outline-offset: 2px;
+    background-color: #fffef0; /* Slight yellow tint to highlight active row */
+}

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Settings | Sales Tax{% endblock %}
+
+{% block main %}
+<style>/* Container and Card */
+.settings-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.settings-card {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 450px;
+}
+
+.settings-header {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+}
+
+.settings-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.settings-header p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #444;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+input[type="number"]:focus {
+    outline: none;
+    border-color: #4a90e2;
+}
+
+.input-suffix {
+    position: absolute;
+    right: 15px;
+    color: #888;
+    font-weight: bold;
+}
+
+.help-text {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* Button */
+.save-button {
+    width: 100%;
+    background-color: #4a90e2;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.save-button:hover {
+    background-color: #357abd;
+}
+
+/* Flash Messages */
+.alert {
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }</style>
+<div class="settings-wrapper">
+    <form action="{{ url_for('main.setting_sales_tax') }}" method="post" class="settings-card">
+        <header class="settings-header">
+            <h2>System Settings</h2>
+            <p>Adjust the global tax rate applied to all new bills.</p>
+        </header>
+
+
+        <div class="form-group">
+            <label for="sales_tax">Sales Tax Rate (%)</label>
+            <div class="input-wrapper">
+                <input type="number" 
+                       step="0.01" 
+                       id="sales_tax" 
+                       name="sales_tax" 
+                       value="{{ setting.tax }}" 
+                       placeholder="0.00"
+                       required>
+                <span class="input-suffix">%</span>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="save-button">Update Settings</button>
+        </div>
+    </form>
+    <form action="{{ url_for('main.change_password') }}" method="post" class="settings-card">
+        <header class="settings-header">
+            <h2>Change Password</h2>
+        </header>
+        <div class="form-group">
+            <label for="current_password">Current Password</label>
+            <input type="password" id="current_password" name="current_password" required>
+        </div>
+        <div class="form-group">
+            <label for="new_password">New Password</label>
+            <input type="password" id="new_password" name="new_password" minlength="8" required>
+        </div>
+        <div class="form-group">
+            <label for="confirm_password">Confirm New Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" minlength="8" required>
+        </div>
+        <button type="submit" class="save-button">Update Password</button>
+    </form>
+</div>
+{% endblock main %}

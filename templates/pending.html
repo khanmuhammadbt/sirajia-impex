@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Pending Invoices{% endblock title %}
+
+{% block link %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pending.css') }}">
+{% endblock link %}
+
+{% block main %}
+<div class="pending-wrapper">
+    {% if bills %}
+    <div class="pending-card">
+        <h1>Pending Invoice</h1>
+        <p class="subtitle">Assign an invoice number to a pending bill.</p>
+        
+        <form action="{{url_for('main.pending_bill')}}" method="post" class="styled-form">
+            <div class="form-group">
+                <label for="pending_bill">Select Bill Number</label>
+                <select name="bill_no" id="pending_bill" required>
+                    <option value="" disabled selected>Choose a bill...</option>
+                    {% for bill in bills %}
+                        <option value="{{ bill.bill_no }}">{{ bill.bill_no }}</option>
+                    {% endfor %}
+                </select>   
+            </div>
+
+            <div class="form-group">
+                <label for="invoice_no">Invoice Number</label>
+                <input type="number" name="invoice_no" id="invoice_no" placeholder="e.g. 10452" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Aproval</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="no-data">
+        <p>No pending bills found.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock main %}

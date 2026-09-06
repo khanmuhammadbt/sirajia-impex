@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock title %}
+{% block link %}<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">{% endblock link %}
+{% block main %}
+
+<div class="dashboard-wrapper">
+    <header class="studio-header">
+        <img src="{{ url_for('static', filename='img/sirajia_impex_logo.png') }}" alt="Logo" class="logo">
+        <h1>Siragia Impex</h1>
+    </header>
+
+    <div class="card-grid">
+        <a href="{{ url_for('main.bill') }}" class="studio-card">
+            <div class="card-icon">➕</div>
+            <div class="card-content">
+                <h3>Create Bill</h3>
+                <p>Generate new customer bills</p>
+            </div>
+        </a>
+
+        <a href="{{ url_for('main.record') }}" class="studio-card">
+            <div class="card-icon">📁</div>
+            <div class="card-content">
+                <h3>Records</h3>
+                <p>Access billing history</p>
+            </div>
+        </a>
+
+        <a href="{{ url_for('main.pending') }}" 
+           class="studio-card {% if invoice and invoice.id %}status-alert pulse{% endif %}">
+            <div class="card-icon">⏳</div>
+            <div class="card-content">
+                <h3>Pending</h3>
+                <p>
+                    {% if invoice and invoice.id %}
+                        <strong>Pending Invoices</strong>
+                    {% else %}
+                        No items pending
+                    {% endif %}
+                </p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock main %}

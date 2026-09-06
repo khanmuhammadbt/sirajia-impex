@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+{% block title %}Records{% endblock title %}
+{% block link %}<link rel="stylesheet" href="{{ url_for('static', filename='css/record.css') }}">{% endblock link %}
+
+{% block main %}
+
+
+<div class="record-page">
+    
+    <div class="summary-bar">
+        <div class="summary-card bg-total">
+        <div>Total Amount</div>
+        <div id="summary_total">0</div>
+    </div>
+    <div class="summary-card bg-paid">
+        <div>Total Paid</div>
+        <div id="summary_paid">0</div>
+    </div>
+    <div class="summary-card bg-unpaid">
+        <div>Balance (negative = advance)</div>
+        <div id="summary_balance">0</div>
+    </div>
+
+</div>
+
+<input type="hidden" name="company" id="pdf_company">
+<input type="hidden" name="status" id="pdf_status">
+
+<div class="filter-section" style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; background: #f9f9f9; padding: 15px; border-radius: 8px;">
+    <div>
+        <label style="display:block; font-weight:bold;">Company:</label>
+        
+        <select id="company_filter" name="company_name" default:"{% if company_name %}{{ company_name }}{% endif %}">
+            <option value="all">All Companies</option>
+            {% for company in companies %}<option value="{{ company.company_name }}">{{ company.company_name }}</option>{% endfor %}
+        </select>
+    </div>
+
+        <div>
+            <label style="display:block; font-weight:bold;">Bill No:</label>
+            <input type="text" id="bill_filter" placeholder="Search bill..." name="bill_no" default:"{% if bill_no %}{{ bill_no }}{% endif %}">
+        </div>
+
+        <div>
+            <label style="display:block; font-weight:bold;">Date:</label>
+            <input type="date" id="date_picker_filter" name="date" default:"{% if date %}{{ date }}{% endif %}">
+        </div>
+
+        <div>
+            <label style="display:block; font-weight:bold;">Status:</label>
+            <select id="status_filter" name default:"{% if status %}{{ status }}{% endif %}">
+                <option value="all">All Statuses</option>
+                <option value="paid">Paid</option>
+                <option value="partial">Partial</option>
+                <option value="unpaid">Unpaid</option>
+            </select>
+        </div>
+
+        <div>
+            <label style="display:block; font-weight:bold;">Month:</label>
+            <select id="month_filter" name="month" default:"{% if month %}{{ month }}{% endif %}">
+                <option value="all">All Months</option>
+                <option value="01">Jan</option><option value="02">Feb</option>
+                <option value="03">Mar</option><option value="04">Apr</option>
+                <option value="05">May</option><option value="06">Jun</option>
+                <option value="07">Jul</option><option value="08">Aug</option>
+                <option value="09">Sep</option><option value="10">Oct</option>
+                <option value="11">Nov</option><option value="12">Dec</option>
+            </select>
+        </div>
+
+        <div>
+            <label style="display:block; font-weight:bold;">Year:</label>
+            <select id="year_filter" name="year" default:"{% if year %}{{ year }}{% endif %}"><option value="all">All Years</option></select>
+        </div>
+
+    <button type="reset" onclick="resetFilters()" style="padding: 5px 15px; cursor: pointer;">Clear All</button>
+    <button type="button" onclick="exportRecordPdf()" style="padding: 5px 15px; cursor: pointer;">Export PDF</button>
+    </div>
+    <div class="record-table-wrap">
+    <table id="record_table" border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+        <tr style="background-color: #eee;">
+            <th>Date</th>
+            <th>Check Clear Date</th>
+            <th>Description</th>
+            <th>check details</th>
+            <th>Gate Pass No</th>
+            <th>Rate</th>
+            <th>Qty</th>
+            <th>Amount</th>
+            <th>Total Amount</th>
+            <th>Gst</th>
+            <th>Gross Amount</th>
+            <th>Bill No.</th>
+            <th>invoice No.</th>
+            <th>Company</th>
+            <th>Status</th>
+            <th>Paid</th>
+            <th>Unpaid</th>
+            <th>Days Elapsed</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for data in record %}
+        {% set current_company = companies | selectattr("company_name", "equalto", data.company_name) | first %}
+        {% for item in data.items %}
+        {% set bill_payments = payments_by_bill.get(data.id, []) %}
+        <tr class="status-row status-row-{{ (data.payment_status or 'unpaid')|lower }}" data-payment-days="{{ current_company.payment_days if current_company else 0 }}">
+            <td class="date-col">{{ data.date.strftime('%d-%m-%Y') if data.date else '' }}</td> 
+            <td >{% if bill_payments %}{% for payment in bill_payments %}{{ payment.clear_date }}{% if not loop.last %}<br>{% endif %}{% endfor %}{% else %}{{ data.clear_date }}{% endif %}</td> 
+            <td>{{ item.description }}</td>
+            <td>{% if bill_payments %}{% for payment in bill_payments %}{{ payment.check_no }} ({{ payment.payment }}){% if not loop.last %}<br>{% endif %}{% endfor %}{% else %}{{ data.check_no }}{% endif %}</td>
+            <td>{{ data.gate_pass_no }}</td>
+            <td>{{ item.rate }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.amount }}</td>
+            <td>{{ data.grand_total }}</td>
+            <td>{{ data.tax }}</td>
+            <td class="amount-col">{{ data.final_total }}</td>
+            <td class="bill-col">{{ data.bill_no }}</td>
+            <td>{{ data.invoice_no }}</td>
+            <td class="company-col">{{ data.company_name }}</td>
+            <td class="status-col"><b class="status-badge status-{{ (data.payment_status or 'unpaid')|lower }}">{{ data.payment_status or 'unpaid' }}</b></td>
+            <td >{{ data.paid_amount }}</td>
+            <td class="unpaid-amount-col">{{ (data.final_total or 0) - (data.paid_amount or 0) }}</td>
+            <td class="days-elapsed-col">--</td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const companySelect = document.getElementById('company_filter');
+    const billInput = document.getElementById('bill_filter');
+    const statusSelect = document.getElementById('status_filter');
+    const monthSelect = document.getElementById('month_filter');
+    const yearSelect = document.getElementById('year_filter');
+    const datePicker = document.getElementById('date_picker_filter');
+    const rows = document.querySelectorAll('#record_table tbody tr');
+
+    function processAging() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        rows.forEach(row => {
+            const status = row.querySelector('.status-col').textContent.trim().toLowerCase();
+            const dateText = row.querySelector('.date-col').textContent.trim();
+            const paymentDaysLimit = parseInt(row.getAttribute('data-payment-days')) || 0;
+            const daysCell = row.querySelector('.days-elapsed-col');
+
+            if (status !== 'paid') {
+                const parts = dateText.split('-'); // DD-MM-YYYY
+                const billDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                if (!isNaN(billDate)) {
+                    const diffDays = Math.floor((today - billDate) / (1000 * 60 * 60 * 24));
+                    daysCell.textContent = diffDays + " days";
+                    if (diffDays > paymentDaysLimit) row.classList.add('overdue');
+                }
+            } else {
+                daysCell.textContent = "-";
+            }
+        });
+    }
+
+    function filterTable() {
+        const selComp = companySelect.value.toLowerCase();
+        const selBill = billInput.value.toLowerCase();
+        const selStatus = statusSelect.value.toLowerCase();
+        const selMonth = monthSelect.value;
+        const selYear = yearSelect.value;
+        const selDate = datePicker.value; // YYYY-MM-DD
+
+        let totalBill = 0;
+        let totalPaid = 0;
+
+        rows.forEach(row => {
+            const rowComp = row.querySelector('.company-col').textContent.toLowerCase();
+            const rowBill = row.querySelector('.bill-col').textContent.toLowerCase();
+            const rowStatus = row.querySelector('.status-col').textContent.toLowerCase();
+            const rowDateRaw = row.querySelector('.date-col').textContent.trim(); // DD-MM-YYYY
+            const rowAmt = parseFloat(row.querySelector('.amount-col').textContent) || 0;
+            const rowPaid = parseFloat(row.querySelector('td:nth-child(16)').textContent) || 0; // paid column
+
+            const parts = rowDateRaw.split('-');
+            const rowYear = parts[2];
+            const rowMonth = parts[1];
+            const formattedRowDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // YYYY-MM-DD
+
+            const matchComp = (selComp === 'all' || rowComp === selComp);
+            const matchBill = rowBill.includes(selBill);
+            const matchStatus = (selStatus === 'all' || rowStatus === selStatus);
+            const matchMonth = (selMonth === 'all' || rowMonth === selMonth);
+            const matchYear = (selYear === 'all' || rowYear === selYear);
+            const matchDate = (!selDate || formattedRowDate === selDate);
+
+            if (matchComp && matchBill && matchStatus && matchMonth && matchYear && matchDate) {
+                row.style.display = '';
+                totalBill += rowAmt;
+                totalPaid += rowPaid;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        document.getElementById('summary_total').textContent = totalBill.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('summary_paid').textContent = totalPaid.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('summary_balance').textContent = (totalBill - totalPaid).toLocaleString(undefined, {minimumFractionDigits: 2});
+    }
+
+    function populateYears() {
+        const years = new Set();
+        rows.forEach(row => {
+            const dateText = row.querySelector('.date-col').textContent.trim();
+            const parts = dateText.split('-'); // DD-MM-YYYY
+            if (parts[2]) years.add(parts[2]);
+        });
+        Array.from(years).sort((a, b) => b - a).forEach(year => {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+        });
+    }
+
+    function resetFilters() {
+        companySelect.value = 'all';
+        billInput.value = '';
+        statusSelect.value = 'all';
+        monthSelect.value = 'all';
+        yearSelect.value = 'all';
+        datePicker.value = '';
+        filterTable();
+    }
+
+    [companySelect, statusSelect, monthSelect, yearSelect, datePicker].forEach(el => el.addEventListener('change', filterTable));
+    billInput.addEventListener('input', filterTable);
+
+    populateYears();
+    processAging();
+    filterTable();
+});
+
+</script>
+<script>
+function resetFilters() {
+    // Get all filter elements
+    const companySelect = document.getElementById('company_filter');
+    const billInput = document.getElementById('bill_filter');
+    const statusSelect = document.getElementById('status_filter');
+    const monthSelect = document.getElementById('month_filter');
+    const yearSelect = document.getElementById('year_filter');
+    const datePicker = document.getElementById('date_picker_filter');
+
+    // Reset their values
+    companySelect.value = 'all';
+    billInput.value = '';
+    statusSelect.value = 'all';
+    monthSelect.value = 'all';
+    yearSelect.value = 'all';
+    datePicker.value = '';
+
+    // Trigger table filtering after reset
+    filterTable();
+}
+
+// Make sure filterTable() exists
+function filterTable() {
+    const rows = document.querySelectorAll('#record_table tbody tr');
+
+    const selComp = document.getElementById('company_filter').value.toLowerCase();
+    const selBill = document.getElementById('bill_filter').value.toLowerCase();
+    const selStatus = document.getElementById('status_filter').value.toLowerCase();
+    const selMonth = document.getElementById('month_filter').value;
+    const selYear = document.getElementById('year_filter').value;
+    const selDate = document.getElementById('date_picker_filter').value;
+
+    let totalBill = 0;
+    let totalPaid = 0;
+
+    rows.forEach(row => {
+        const rowComp = row.querySelector('.company-col').textContent.toLowerCase();
+        const rowBill = row.querySelector('.bill-col').textContent.toLowerCase();
+        const rowStatus = row.querySelector('.status-col').textContent.toLowerCase();
+        const rowDateRaw = row.querySelector('.date-col').textContent.trim(); // DD-MM-YYYY
+        const rowAmt = parseFloat(row.querySelector('.amount-col').textContent) || 0;
+        const rowPaid = parseFloat(row.querySelector('td:nth-child(16)').textContent) || 0;
+
+        const parts = rowDateRaw.split('-');
+        const rowYear = parts[2];
+        const rowMonth = parts[1];
+        const formattedRowDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+
+        const matchComp = (selComp === 'all' || rowComp === selComp);
+        const matchBill = rowBill.includes(selBill);
+        const matchStatus = (selStatus === 'all' || rowStatus === selStatus);
+        const matchMonth = (selMonth === 'all' || rowMonth === selMonth);
+        const matchYear = (selYear === 'all' || rowYear === selYear);
+        const matchDate = (!selDate || formattedRowDate === selDate);
+
+        if (matchComp && matchBill && matchStatus && matchMonth && matchYear && matchDate) {
+            row.style.display = '';
+            totalBill += rowAmt;
+            totalPaid += rowPaid;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    // Update summary cards
+    document.getElementById('summary_total').textContent = totalBill.toLocaleString(undefined, {minimumFractionDigits: 2});
+    document.getElementById('summary_paid').textContent = totalPaid.toLocaleString(undefined, {minimumFractionDigits: 2});
+    document.getElementById('summary_balance').textContent = (totalBill - totalPaid).toLocaleString(undefined, {minimumFractionDigits: 2});
+}
+
+function exportRecordPdf() {
+    const params = new URLSearchParams({
+        company: document.getElementById('company_filter').value,
+        bill: document.getElementById('bill_filter').value,
+        status: document.getElementById('status_filter').value,
+        month: document.getElementById('month_filter').value,
+        year: document.getElementById('year_filter').value,
+        date: document.getElementById('date_picker_filter').value
+    });
+    window.location.href = `{{ url_for('main.generate_record_pdf') }}?${params}`;
+}
+</script>
+
+
+{% endblock main %}

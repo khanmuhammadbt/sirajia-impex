@@ -1,0 +1,96 @@
+/* Light Mode - YouTube Studio Style */
+body {
+    background-color: #f9f9f9; /* Light grey-white background */
+    color: #0f0f0f;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+}
+
+.dashboard-wrapper {
+    width: 100%;
+}
+
+.studio-header {
+    background-color: #1a365d;
+    display: flex;
+    align-items: anchor-center;
+    margin-bottom: 30px;
+    color: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
+    padding-left: 40px;
+    border-radius: 10px
+}
+
+.logo {
+    height: 45px;
+    margin-right: 15px;
+}
+
+/* Grid Layout */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Standard Box Styling */
+.studio-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 20px;
+    text-decoration: none;
+    color: #0f0f0f;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.studio-card:hover {
+    background-color: #f2f2f2;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.card-content h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.card-content p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #606060;
+}
+
+/* RED ALERT Logic: When data is present */
+.status-alert {
+    background-color: #ff4e4e !important; /* Bright Red */
+    border-color: #d93025 !important;
+}
+
+.status-alert .card-content h3, 
+.status-alert .card-content p, 
+.status-alert .card-icon {
+    color: #ffffff !important; /* White text on red background */
+}
+
+.status-alert:hover {
+    background-color: #e53935 !important;
+}
+
+/* Animation for the Red Alert */
+.pulse {
+    animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(255, 78, 78, 0.5); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 78, 78, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 78, 78, 0); }
+}

@@ -1,0 +1,163 @@
+/* Variables for easy branding updates */
+:root {
+    --primary-blue: #1a365d;    /* Deep Navy */
+    --secondary-blue: #2b6cb0;  /* Professional Blue */
+    --accent-red: #e53e3e;      /* Strong Red */
+    --hover-red: #c53030;
+    --light-bg: #f7fafc;
+    --text-dark: #2d3748;
+    --white: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+/* Sidebar navigation */
+.main-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 250px;
+    background-color: var(--primary-blue);
+    color: var(--white);
+    padding: 1.5rem 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-img {
+    height: 40px;
+    width: auto;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.nav-item {
+    display: block;
+    color: var(--white);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-item:hover {
+    background-color: var(--secondary-blue);
+    color: var(--accent-red);
+}
+
+.nav-links form {
+    margin: 0;
+}
+
+.nav-links button {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+/* Special Red Button for Credit Terms */
+.btn-red {
+    background-color: var(--accent-red);
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    transition: background 0.3s ease !important;
+}
+
+.btn-red:hover {
+    background-color: var(--hover-red);
+    color: var(--white);
+}
+
+/* Main Content Area */
+.container {
+    max-width: 1200px;
+    margin: 2rem auto 2rem calc(250px + 2rem);
+    padding: 2rem;
+    background: var(--white);
+    min-height: 80vh;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Footer */
+.footer {
+    margin-left: 250px;
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.8rem;
+    color: #718096;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-sidebar {
+        position: static;
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .header-container {
+        gap: 1rem;
+    }
+    
+    .nav-links {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        font-size: 0.85rem;
+    }
+
+    .nav-item {
+        padding: 0.4rem 0.6rem;
+    }
+
+    .container {
+        margin: 1rem;
+    }
+
+    .footer {
+        margin-left: 0;
+    }
+}

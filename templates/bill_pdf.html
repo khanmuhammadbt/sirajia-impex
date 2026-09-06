@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sirajia Impex - A5 Invoice</title>
+    <style>
+        /* A5 Page Setup */
+        @page {
+            size: A5;
+            margin: 5mm;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #e0e0e0; 
+            padding: 0; 
+            margin: 0; 
+        }
+
+        .invoice-card { 
+            background: white; 
+            width: 140mm; /* A5 width is 148mm */
+            margin: 10px auto; 
+            padding: 10mm; 
+            border-radius: 5px; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.2); 
+            box-sizing: border-box;
+        }
+        
+        /* Header Styling */
+        .header{
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-direction: row;
+            width:120mm;
+        }
+        .part1 img { height: 80px; }
+        .part2 { text-align: center; margin-bottom: 10px; border-bottom: 2px solid #2e3192; padding-bottom: 5px; }
+        .logo-area h1 { font-size: 28px; margin: 0; color: #1a237e; font-style: italic; }
+        .logo-area h1 span { color: #8b0000; }
+        .sub-header { font-weight: bold; font-size: 14px; color: #000; margin-top: 2px; }
+        .info-text { font-size: 10px; color: #333; margin-top: 2px; line-height: 1.2; }
+
+        /* Input Fields */
+        input { border: none; border-bottom: 1px solid #ccc; outline: none; padding: 2px; font-size: 11px; width: 100%; box-sizing: border-box; }
+        input:focus { border-bottom: 2px solid #2e3192; background-color: #f9f9f9; }
+
+        .top-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 15px; font-weight: bold; font-size: 10px; }
+        .customer-info { margin-top: 10px; }
+        .customer-row { display: flex; align-items: center; margin-bottom: 5px; font-weight: bold; font-size: 11px; }
+
+        /* Table Grid */
+        table { width: 100%; margin-top: 10px; border-collapse: separate; border-spacing: 1px; }
+        th { background-color: #2e3192; color: white; padding: 6px; border-radius: 4px; font-size: 10px; text-transform: uppercase; }
+        .row-cell { border: 1px solid #ccc; border-radius: 4px; padding: 1px; }
+        .row-cell input { border: none; text-align: center; height: 20px; font-size: 10px; }
+        .desc-col input { text-align: left; padding-left: 5px; }
+
+        /* Footer Section */
+        .footer-section { display: grid; grid-template-columns: 1.2fr 1fr; gap: 15px; margin-top: 15px; }
+        .footer-item { display: flex; align-items: center; margin-bottom: 5px; }
+        .label-box { background-color: #800000; color: white; padding: 6px; width: 100px; 
+                     text-align: center; border-radius: 6px; font-weight: bold; font-size: 10px; margin-right: 5px; }
+        .val-box { border: 1px solid #000; border-radius: 6px; flex-grow: 1; height: 28px; overflow: hidden; }
+        .val-box input { height: 100%; padding-left: 5px; border: none; font-weight: bold; font-size: 11px;}
+
+        .no-print-btn { text-align: center; margin: 20px 0; }
+        button { padding: 10px 20px; cursor: pointer; background: #2e3192; color: white; border: none; border-radius: 5px; font-weight: bold; }
+        .no-print-btn a { color: white; text-decoration: none; }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .invoice-card { 
+                box-shadow: none; 
+                border: none; 
+                width: 100%; 
+                margin: 0;
+                padding: 5mm;
+            }
+            .no-print-btn { display: none; }
+            input { border-bottom: none; }
+            .row-cell { border: 1px solid #eee; }
+            .label-box { -webkit-print-color-adjust: exact; background-color: #800000 !important; color: white !important; }
+            th { -webkit-print-color-adjust: exact; background-color: #2e3192 !important; color: white !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="invoice-card">
+    <div class="header">
+        <div class="part1">
+        {% if logo_data %}
+    <img src="data:image/png;base64,{{ logo_data }}" alt="Company Logo" ">
+{% else %}
+    <img src="{{ url_for('static', filename='img/sirajia_impex_logo.png') }}" alt="Sirajia Impex Logo">
+{% endif %}
+            
+        </div>
+        <div class="part2">
+            <div class="logo-area"><h1>Sirajia <span>Impex</span> <small style="font-size: 10px; color: black; font-style: normal;">(Pvt) LTD</small></h1></div>
+            <div class="sub-header">Manufacture All Kind Of Packaging Material</div>
+            <div class="info-text">
+                Phone: 92-041-8555444 | E-mail: sirajiaimpexinfo@gmail.com<br>
+                Madina Town, Faisalabad, Punjab, Pakistan
+            </div>
+        </div>
+    </div>
+
+    <div class="top-row">
+        <div>Date: <input readonly type="text" value="{{ bill_items[0].date }}"></div>
+        <div>PO#: <input readonly type="text" value="{{ bill_items[0].po }}"></div>
+        <div>Ord#: <input readonly type="text" value="{{ bill_items[0].order_no }}"></div>
+        <div>DC#: <input readonly type="text" value="{{ bill_items[0].dc }}"></div>
+        <div>Bill#: <input readonly type="text" value="{{ bill_no }}"></div>
+    </div>
+
+    <div class="customer-info">
+        <div class="customer-row">
+            <span style="white-space: nowrap;">M/S:</span> <input readonly type="text" style="width: 45%; margin: 0 10px;" value="{{ company.company_name }}">
+            <span style="white-space: nowrap;">NTN:</span> <input readonly type="text" style="width: 15%; margin: 0 10px;" value="{{ company.ntn }}">
+            <span style="white-space: nowrap;">GST:</span> <input readonly type="text" style="width: 15%;" value="{{ company.gst }}">
+        </div>
+        <div class="customer-row">
+            Addr: <input readonly type="text" value="{{ company.address }}">
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th width="30">SR#</th>
+                <th width="200">DESCRIPTION</th>
+                <th>QTY</th>
+                <th>RATE</th>
+                <th>AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+        {% for i in range(12) %}
+        {% set item = bill_items[i] if bill_items|length > i else None %}
+        <tr>
+            <td class="row-cell" align="center" style="font-size: 10px;">{{ i + 1 }}</td>
+            <td class="row-cell desc-col">
+                <input readonly type="text" value="{{ item.description if item else '' }}">
+            </td>
+            <td class="row-cell">
+                <input readonly type="number" class="qty" step="any" value="{{ item.quantity if item else '' }}">
+            </td>
+            <td class="row-cell">
+                <input readonly type="number" class="rate" step="any" value="{{ item.rate if item else '' }}">
+            </td>
+            <td class="row-cell">
+                <input readonly type="number" class="amt" readonly>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer-section">
+        <div>
+            {% if bill_items[0].invoice_no %}{% endif %}
+            <div class="footer-item"><div class="label-box">INVOICE NO</div><div class="val-box"><input readonly type="text" value="{% if bill_items[0].invoice_no %}{{ bill_items[0].invoice_no }}{% endif %}"></div></div>
+            <div class="footer-item"><div class="label-box">SIGNATURE</div><div class="val-box"><input readonly type="text"></div></div>
+            <div class="footer-item"><div class="label-box">RECEIVED BY</div><div class="val-box"><input readonly type="text"></div></div>
+        </div>
+        <div>
+            <div class="footer-item"><div class="label-box">TOTAL</div><div class="val-box" ><input readonly type="number" id="total-val" readonly></div></div>
+            <input type="hidden" id="sales-tax-rate" value="{{ setting.sales_tax }}">
+            <div class="footer-item"><div class="label-box">TAX (%)</div><div class="val-box"><input readonly type="number" id="tax" value="{{bill_items[0].tax}}"></div></div>
+            <div class="footer-item"><div class="label-box">GROSS</div><div class="val-box"><input readonly type="number" id="gross-val" readonly></div></div>
+        </div>
+    </div>
+
+    <div class="no-print-btn">
+        <button onclick="window.print()">Print A5 Invoice</button>
+        <button><a href="{{url_for('main.bill')}}">Back to Bill</a></button>
+        <button><a href="{{url_for('main.previous_bills')}}">Previous Bills</a></button>
+    </div>
+</div>
+
+<script>
+    
+document.addEventListener('DOMContentLoaded', () => {
+    calculateInvoice();
+    document.querySelector('.invoice-card').addEventListener('input', calculateInvoice);
+
+    function calculateInvoice() {
+        let total = 0;
+        document.querySelectorAll('#table-body tr').forEach(row => {
+            const qty  = parseFloat(row.querySelector('.qty').value) || 0;
+            const rate = parseFloat(row.querySelector('.rate').value) || 0;
+            const amount = qty * rate;
+            row.querySelector('.amt').value = amount ? amount.toFixed(2) : "";
+            total += amount;
+        });
+        const sales_tax = parseFloat(document.getElementById("sales-tax-rate").value) || 0;
+        const tax = total * (sales_tax / 100);
+        const finalTotal = total + tax;
+
+        document.getElementById("total-val").value = total.toFixed(2);
+        document.getElementById("tax").value = tax.toFixed(2);
+        document.getElementById("gross-val").value = finalTotal.toFixed(2);
+    }
+});
+</script>
+</body>
+</html>

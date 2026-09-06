@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Create Bill{% endblock title %}
+{% block link %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bill.css') }}">{% endblock link %}
+{% block main %}
+<div class="bill-container">
+    <h2>Billing System</h2>
+    <form action="{{ url_for('main.send_data') }}" method="post" class="billing-form">
+        
+        <div class="form-section header-grid">
+            <div class="input-group">
+                <label>Company Name</label>
+                <select name="company_name" required>
+                    <option value="" disabled selected>Select Company</option>
+                    {% for company in companies %}
+                        <option value="{{ company.company_name }}">{{ company.company_name }}</option>
+                    {% endfor %} 
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Date</label>
+                <input type="text" name="date" id="date" >
+            </div>
+            <div class="input-group">
+                <label>PO Number</label>
+                <input type="text" name="po" placeholder="PO #" required>
+            </div>
+            
+        </div>
+
+        <div class="form-section header-grid">
+            <div class="input-group">
+                <label>DC Number</label>
+                <input type="text" name="dc" placeholder="DC #" required>
+            </div>
+            <div class="input-group">
+                <label>Order No</label>
+                <input type="text" name="order_no" placeholder="Order #" required>
+            </div>
+            <div class="input-group">
+                <label>Gate Pass No</label>
+                <input type="text" name="gate_pass_no" placeholder="Gate Pass #" required>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th width="100">Qty</th>
+                        <th width="150">Rate</th>
+                        <th width="150">Amount</th>
+                        <th width="50"></th>
+                    </tr>
+                </thead>
+                <tbody id="items-container">
+                    <tr class="item-row">
+                        <td><input type="text" name="description[]" required></td>
+                        <td><input type="number" name="quantity[]" class="qty" oninput="calculate()" required></td>
+                        <td><input type="number" step="0.01" name="rate[]" class="rate" oninput="calculate()" required></td>
+                        <td><input type="text" class="amount" readonly></td>
+                        <td></td> </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn-add" onclick="addRow()">+ Add Item</button>
+        </div>
+
+        <div class="footer-section">
+            <div class="totals-box">
+                <div class="total-row">
+                    <span>Grand Total:</span>
+                    <input type="text" name="grand_total" id="grand-total" readonly>
+                </div>
+                <input type="hidden" id="sales-tax-rate" value="{{ setting.sales_tax }}">
+                <div class="total-row">
+                    <span>Sales Tax ({{setting.sales_tax}}%):</span>
+                    <input type="text" id="sales-tax" name="sales_tax" required readonly>
+                </div>
+                <div class="total-row final">
+                    <span>Final Total:</span>
+                    <input type="floatformat" name="final_total" id="final-total" readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">Submit Bill</button>
+            <a href="{{url_for('main.generate_pdf')}}"><button type="button"class="btn-secondary">Generate PDF</button></a>
+            <a href="{{url_for('main.print_bill')}}"><button type="button" class="btn-secondary">Print Bill</button></a
+            
+        </div>
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/bill.js') }}"></script>
+{% endblock main %}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sirajia Impex - Record</title>
+    <style>
+        @page { size: A4 landscape; margin: 10mm; }
+        body { font-family: "Segoe UI", Arial, sans-serif; color: #222; margin: 0; font-size: 9px; }
+        .header { display: flex; align-items: center; border-bottom: 2px solid #2e3192; padding-bottom: 8px; margin-bottom: 12px; }
+        .header img { height: 52px; margin-right: 14px; }
+        .title h1 { margin: 0; color: #1a237e; font-size: 22px; }
+        .title h1 span { color: #8b0000; }
+        .title p { margin: 3px 0 0; color: #555; font-size: 10px; }
+        h2 { margin: 0 0 8px; color: #1a237e; font-size: 15px; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { background: #2e3192; color: #fff; padding: 6px 4px; font-size: 8px; text-transform: uppercase; }
+        td { border: 1px solid #c8c8c8; padding: 5px 4px; vertical-align: top; word-wrap: break-word; }
+        tbody tr:nth-child(even) { background: #f5f6fb; }
+        .num { text-align: right; }
+        .center { text-align: center; }
+        .status { font-weight: bold; text-transform: capitalize; }
+        .footer { margin-top: 10px; text-align: right; color: #555; font-size: 9px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        {% if logo_data %}<img src="data:image/png;base64,{{ logo_data }}" alt="Sirajia Impex Logo">{% endif %}
+        <div class="title">
+            <h1>Sirajia <span>Impex</span> <small>(Pvt) LTD</small></h1>
+            <p>Record Report | Manufacture All Kind Of Packaging Material</p>
+        </div>
+    </div>
+
+    <h2>Record</h2>
+    <table>
+        <thead>
+            <tr>
+                <th width="7%">Date</th>
+                <th width="10%">Company</th>
+                <th width="5%">Bill No.</th>
+                <th width="15%">Description</th>
+                <th width="5%">Qty</th>
+                <th width="6%">Rate</th>
+                <th width="7%">Amount</th>
+                <th width="7%">Total</th>
+                <th width="6%">Tax</th>
+                <th width="7%">Gross</th>
+                <th width="7%">Status</th>
+                <th width="7%">Paid</th>
+                <th width="7%">Unpaid</th>
+                <th width="7%">Check Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bill, item in records %}
+            {% set bill_payments = payments_by_bill.get(bill.id, []) %}
+            <tr>
+                <td>{{ bill.date.strftime('%d-%m-%Y') if bill.date else '' }}</td>
+                <td>{{ bill.company_name or '' }}</td>
+                <td class="center">{{ bill.bill_no }}</td>
+                <td>{{ item.description }}</td>
+                <td class="num">{{ item.quantity }}</td>
+                <td class="num">{{ '%.2f'|format(item.rate or 0) }}</td>
+                <td class="num">{{ '%.2f'|format(item.amount or 0) }}</td>
+                <td class="num">{{ '%.2f'|format(bill.grand_total or 0) }}</td>
+                <td class="num">{{ '%.2f'|format(bill.tax or 0) }}</td>
+                <td class="num">{{ '%.2f'|format(bill.final_total or 0) }}</td>
+                <td class="status">{{ bill.payment_status or 'unpaid' }}</td>
+                <td class="num">{{ '%.2f'|format(bill.paid_amount or 0) }}</td>
+                <td class="num">{{ '%.2f'|format((bill.final_total or 0) - (bill.paid_amount or 0)) }}</td>
+                <td>{% if bill_payments %}{% for payment in bill_payments %}{{ payment.check_no }} ({{ '%.2f'|format(payment.payment or 0) }}){% if not loop.last %}<br>{% endif %}{% endfor %}{% else %}{{ bill.check_no or '' }}{% endif %}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="14" class="center">No records found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="footer">Generated from current Record data</div>
+</body>
+</html>

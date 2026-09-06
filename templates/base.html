@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sirajia Impex{% endblock title %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    {% block link %}{% endblock link %}
+</head>
+<body>
+    <aside class="main-sidebar">
+        <div class="header-container">
+            <div class="brand">
+                {% if logo_data %}
+                <img src="data:image/png;base64,{{ logo_data }}" alt="Sirajia Impex Logo" class="logo-img">
+                {% else %}
+                <img src="{{url_for('static',filename='img/sirajia_impex_logo.png')}}" alt="Sirajia Impex Logo" class="logo-img">
+                {% endif %}
+                <span class="logo-text">Sirajia Impex</span>
+            </div>
+            
+            <nav class="navbar" aria-label="Main navigation">
+                <ul class="nav-links">
+                    <li><a href="{{url_for('main.dashboard')}}" class="nav-item">Dasboard</a></li>
+                    <li><a href="{{url_for('main.bill')}}" class="nav-item">Bill</a></li>
+                    <li><a href="{{url_for('main.lager')}}" class="nav-item">Lager</a></li>
+                    <li><a href="{{url_for('main.record')}}" class="nav-item">Record</a></li>
+                    <li><a href="{{url_for('main.add_company')}}" class="nav-item">Add Company</a></li>
+                    <li><a href="{{url_for('main.credit_terms')}}" class="nav-item ">Credit Terms</a></li>
+                    <li><a href="{{url_for('main.previous_bills')}}" class="nav-item ">Previous Bill</a></li>
+                    <li><a href="{{url_for('main.settings')}}" class="nav-item "><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg></a></li>
+                    <li><form action="{{ url_for('auth.logout') }}" method="post"><button type="submit" class="nav-item">Logout</button></form></li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="container">
+        {% block main %}
+        {% endblock main %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 Sirajia Impex. All rights reserved.</p>
+    </footer>
+</body>
+</html>
